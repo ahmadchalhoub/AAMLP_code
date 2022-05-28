@@ -1,11 +1,10 @@
-# This shows how k-fold can be applied to a dataset. The 'winequality-red.csv'
-# dataset will be used again here to demonstrate this.
+# This shows how stratified k-fold can be applied to a dataset. 
+# I made up a very small sample dataset of 20 binary classification
+# samples with a very big skew to show how stratified k-fold deals with skew.
 
-# k-fold is a method of cross-validation that has a single parameter, 'k',
-# that refers to the number of groups that a given data sample is split into.
-# This method can be used with almost any kind of data. For example, if a
-# dataset is made up of images, a csv file can be created with 'image id', 
-# 'image location', and 'image label', and k-fold can be used to split the data.
+# Stratified k-fold ensures that every fold has the same proportion of class labels.
+# This means that whatever metric one chooses to evaluate, similar results
+# will be produces across all folds. 
 
 # Import necessary packages
 import pandas as pd
@@ -27,7 +26,7 @@ if __name__ == "__main__":
     # dataset to use for stratified folding
     y = df.target.values
     
-    # Initiate the kfold class from the 'model_selection' module
+    # Initiate the stratified kfold class from the 'model_selection' module
     kf = model_selection.StratifiedKFold(n_splits=2)
 
     # Fill the new kfold column and split the data into 2 sections
