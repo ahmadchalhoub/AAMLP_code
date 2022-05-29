@@ -31,6 +31,7 @@ if __name__ == "__main__":
 
     # Fill the new kfold column and split the data into 2 sections
     for fold, (trn_, val_) in enumerate(kf.split(X=df, y=y)):
+        # printed to visualize and better understand
         print('fold: ', fold)
         print('trn_: ', trn_)
         print('val_: ', val_)
