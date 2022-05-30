@@ -4,8 +4,13 @@
 
 from sklearn import metrics
 
-# Define function to calculate accuracy manually
 def calculate_accuracy(y_true, y_pred):
+    """
+    Function to calculate accuracy manually
+    :param y_true: list of true values
+    :param y_pred: list of predicted values
+    :return: calculated accuracy
+    """
 
     # Initialize counter to keep track of the number of correct predictions
     correct_counter = 0
@@ -13,7 +18,7 @@ def calculate_accuracy(y_true, y_pred):
     # Loop over the truth and predicted values and update the correct_counter
     # variable accordingly
     for yt, yp in zip(y_true, y_pred):
-        if yt==yp:
+        if yt == yp:
             correct_counter += 1 
     
     # Calculate and return the accuracy value
