@@ -1,4 +1,6 @@
-
+# This script shows how True Positives, True Negatives, False Positives,
+# and False Negatives are calculated. And it shows how different evaluation
+# metrics, such as accuracy and precision, can be calculated using those variables.
 
 def true_positive(y_true, y_pred):
     """
@@ -103,6 +105,15 @@ def calculate_precision(tp, fp):
     """
     return (tp) / (tp + fp)
 
+def calculate_recall(tp, fn):
+    """
+    Function to calculate recall from tp and fn values
+    :param tp: true positives
+    :param fp: false negatives
+    :return: calculated recall
+    """
+    return (tp) / (tp + fn)
+
 if __name__ == "__main__":
 
     # Initialize two arrays, one that has true values
@@ -125,3 +136,6 @@ if __name__ == "__main__":
 
     # Calculate the precision from the above variables
     print('Precision: ', calculate_precision(true_p, false_p))
+
+    # Calculate the recall from the above variables
+    print('Recall: ', calculate_recall(true_p, false_n))
