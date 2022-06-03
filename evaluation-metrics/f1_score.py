@@ -1,8 +1,10 @@
-# This script shows how True Positives, True Negatives, False Positives,
-# and False Negatives are calculated. And it shows how different evaluation
-# metrics, such as accuracy and precision, can be calculated using those variables.
+# This script shows how the F1 score can be calculated manually
+# from recall and precision, as well as from the Sklearn library.
 
-import matplotlib.pyplot as plt
+# F1 score takes both recall and precision into account, and should
+# be used when working with datasets that have skewed targets.
+
+from sklearn import metrics
 
 def true_positive(y_true, y_pred):
     """
@@ -84,7 +86,6 @@ def false_negative(y_true, y_pred):
     # Return the number of false negatives
     return fn
 
-
 def calculate_accuracy_v2(y_true, y_pred):
     """
     Function to calculate accuracy from targets and predictions
@@ -122,65 +123,32 @@ def calculate_recall(y_true, y_pred):
     false_n = false_negative(y_true, y_pred)
     return (true_p) / (true_p + false_n)
 
-if __name__ == "__main__":
+def calculate_f1(y_true, y_pred):
+    """
+    Function to calculate f1 score from targets and predictions
+    :param y_true: target values
+    :param y_pred: predicted values
+    :return: calculated f1 score
+    """
+    p = calculate_precision(y_true, y_pred)
+    r = calculate_recall(y_true, y_pred)
+    f1_score = 2*p*r / (p + r)
+    return f1_score
 
+if __name__ == "__main__":
+    
     # Initialize two arrays, one that has true values
     # and one that has predicted values
-    l1 = [0, 1, 1, 1, 0, 0, 0, 1]
-    l2 = [0, 1, 0, 1, 0, 1, 0, 0]
-
-    # Calculate the accuracy from the above variables
-    print('Accuracy: ', calculate_accuracy_v2(l1, l2))
-
-    # Calculate the precision from the above variables
-    print('Precision: ', calculate_precision(l1, l2))
-
-    # Calculate the recall from the above variables
-    print('Recall: ', calculate_recall(l1, l2))
-
-
-    # Now let's graph a precision-recall curve. We assume 
-    # the below target values and the predicted probability values
-
-    # Target values
-    y_t = [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 
+    y_true = [0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
               1, 0, 0, 0, 0, 0, 0, 0, 1, 0]
 
-    # Probability values for a sample being assigned
-    # a value of 1
-    y_p = [0.02638412, 0.11114267, 0.31620708,
-            0.0490937, 0.0191491, 0.17554844,
-            0.15952202, 0.03819563, 0.11639273,
-            0.079377, 0.08584789, 0.39095342,
-            0.27259048, 0.03447096, 0.04644807,
-            0.03543574, 0.18521942, 0.05934904,
-            0.61977213, 0.33056815]
+    y_pred = [0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
+              1, 0, 0, 0, 0, 0, 0, 0, 1, 0]
 
-    # Empty lists to store the precision and recall values
-    precisions = []
-    recalls = []
+    # Calculate f1 score using custom functions and calculations
+    manual_f1 = calculate_f1(y_true, y_pred)
+    print('Manual f1 score = ', manual_f1)
 
-    # Assumed threshold values. It is not explained in the book
-    # how these values are assumed, so this is something that I
-    # will try to research and find an answer to
-    thresholds = [0.0490937, 0.05934905, 0.079377,
-                0.08584789, 0.11114267, 0.11639273,
-                0.15952202, 0.17554844, 0.18521942,
-                0.27259048, 0.31620708, 0.33056815,
-                0.39095342, 0.61977213]
-
-    # For every threshold value in the 'thresholds' list, calculate
-    # the precision and recall values of the targets and predictions
-    for i in thresholds:
-        temp_prediction = [1 if x >= i else 0 for x in y_p]
-        p = calculate_precision(y_t, temp_prediction)
-        r = calculate_recall(y_t, temp_prediction)
-        precisions.append(p)
-        recalls.append(r)
-
-    # Plot the precision-recall curve
-    plt.figure(figsize=(7, 7))
-    plt.plot(recalls, precisions)
-    plt.xlabel('Recall', fontsize=15)
-    plt.ylabel('Precision', fontsize=15)
-    plt.show()
+    # Calculate f1 score using sklearn library 
+    sklearn_f1 = metrics.f1_score(y_true, y_pred)
+    print('Sklearn f1 score = ', sklearn_f1)
