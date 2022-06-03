@@ -2,6 +2,8 @@
 # and False Negatives are calculated. And it shows how different evaluation
 # metrics, such as accuracy and precision, can be calculated using those variables.
 
+import matplotlib.pyplot as plt
+
 def true_positive(y_true, y_pred):
     """
     Function to calculate True Positives
@@ -83,36 +85,42 @@ def false_negative(y_true, y_pred):
     return fn
 
 
-def calculate_accuracy_v2(tp, fp, tn, fn):
+def calculate_accuracy_v2(y_true, y_pred):
     """
     Function to calculate accuracy from tp, fp, tn, and fn values
-    :param tp: true positives
-    :param fp: false positives
-    :param tn: true negatives
-    :param fn: false negatives
+    :param y_true: target values
+    :param y_pred: predicted values
     :return: calculated accuracy
     """
+    true_p = true_positive(y_true, y_pred)
+    false_p = false_positive(y_true, y_pred)
+    true_n = true_negative(y_true, y_pred)
+    false_n = false_negative(y_true, y_pred)
 
     return (true_p + true_n) / (true_p + true_n + false_p + false_n)
 
 
-def calculate_precision(tp, fp):
+def calculate_precision(y_true, y_pred):
     """
     Function to calculate precision from tp and fp values
-    :param tp: true positives
-    :param fp: false positives
+    :param y_true: target values
+    :param y_pred: predicted values
     :return: calculated precision
     """
-    return (tp) / (tp + fp)
+    true_p = true_positive(y_true, y_pred)
+    false_p = false_positive(y_true, y_pred)
+    return (true_p) / (true_p + false_p)
 
-def calculate_recall(tp, fn):
+def calculate_recall(y_true, y_pred):
     """
     Function to calculate recall from tp and fn values
-    :param tp: true positives
-    :param fp: false negatives
+    :param y_true: target values
+    :param y_pred: predicted values
     :return: calculated recall
     """
-    return (tp) / (tp + fn)
+    true_p = true_positive(y_true, y_pred)
+    false_n = false_negative(y_true, y_pred)
+    return (true_p) / (true_p + false_n)
 
 if __name__ == "__main__":
 
@@ -121,21 +129,58 @@ if __name__ == "__main__":
     l1 = [0, 1, 1, 1, 0, 0, 0, 1]
     l2 = [0, 1, 0, 1, 0, 1, 0, 0]
 
-    # Call all functions defined above to calculate tp, fp, tn, and fn
-    true_p = true_positive(l1, l2)
-    print('True positives: ', true_p)
-    true_n = true_negative(l1, l2)
-    print('True negatives: ', true_n)
-    false_p = false_positive(l1, l2)
-    print('False positives: ', false_p)
-    false_n = false_negative(l1, l2)
-    print('False negatives: ', false_n)
-
     # Calculate the accuracy from the above variables
-    print('Accuracy: ', calculate_accuracy_v2(true_p, false_p, true_n, false_n))
+    print('Accuracy: ', calculate_accuracy_v2(l1, l2))
 
     # Calculate the precision from the above variables
-    print('Precision: ', calculate_precision(true_p, false_p))
+    print('Precision: ', calculate_precision(l1, l2))
 
     # Calculate the recall from the above variables
-    print('Recall: ', calculate_recall(true_p, false_n))
+    print('Recall: ', calculate_recall(l1, l2))
+
+
+    # Now let's graph a precision-recall curve. We assume 
+    # the below target values and the predicted probability values
+
+    # Target values
+    y_t = [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 
+              1, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+
+    # Probability values for a sample being assigned
+    # a value of 1
+    y_p = [0.02638412, 0.11114267, 0.31620708,
+            0.0490937, 0.0191491, 0.17554844,
+            0.15952202, 0.03819563, 0.11639273,
+            0.079377, 0.08584789, 0.39095342,
+            0.27259048, 0.03447096, 0.04644807,
+            0.03543574, 0.18521942, 0.05934904,
+            0.61977213, 0.33056815]
+
+    # Empty lists to store the precision and recall values
+    precisions = []
+    recalls = []
+
+    # Assumed threshold values. It is not explained in the book
+    # how these values are assumed, so this is something that I
+    # will try to research and find an answer to
+    thresholds = [0.0490937, 0.05934905, 0.079377,
+                0.08584789, 0.11114267, 0.11639273,
+                0.15952202, 0.17554844, 0.18521942,
+                0.27259048, 0.31620708, 0.33056815,
+                0.39095342, 0.61977213]
+
+    # For every threshold value in the 'thresholds' list, calculate
+    # the precision and recall values of the targets and predictions
+    for i in thresholds:
+        temp_prediction = [1 if x >= i else 0 for x in y_p]
+        p = calculate_precision(y_t, temp_prediction)
+        r = calculate_recall(y_t, temp_prediction)
+        precisions.append(p)
+        recalls.append(r)
+
+    # Plot the precision-recall curve
+    plt.figure(figsize=(7, 7))
+    plt.plot(recalls, precisions)
+    plt.xlabel('Recall', fontsize=15)
+    plt.ylabel('Precision', fontsize=15)
+    plt.show()
