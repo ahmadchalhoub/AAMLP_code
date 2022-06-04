@@ -9,6 +9,9 @@
 # threshold values, and in turn decide what threshold is best to choose.
 
 import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+
 from sklearn import metrics
 
 def true_positive(y_true, y_pred):
@@ -178,6 +181,21 @@ if __name__ == "__main__":
     plt.xlabel('FPR', fontsize=15)
     plt.ylabel('TPR', fontsize=15)
 
+    # Create table that shows the threshold values with their
+    # corresponding TP and FP values, to better observe how 
+    # changing thresholds affect the TP and FP values
+    tp_list = np.array(tp_list).T
+    fp_list = np.array(fp_list).T
+    tpr_list = np.array(tpr_list).T
+    fpr_list = np.array(fpr_list).T
+    thresholds = np.array(thresholds).T
+    thresholds_table = pd.DataFrame(data=thresholds, columns=["thresholds"])
+    thresholds_table['TP'] = tp_list
+    thresholds_table['FP'] = fp_list
+    thresholds_table['TPR'] = tpr_list
+    thresholds_table['FPR'] = fpr_list
+    print(thresholds_table)
+    
     # Calculate the AUC value using Sklearn
     AUC_values = metrics.roc_auc_score(y_true, y_pred)
     print('AUC values = ', AUC_values)
