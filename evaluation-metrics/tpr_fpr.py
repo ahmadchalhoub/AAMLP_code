@@ -1,9 +1,10 @@
-# This script shows how the F1 score can be calculated manually
-# from recall and precision, as well as from the Sklearn library.
+# This script implements the calculation of TPR (True Positive Ratio) 
+# and FPR (False Positive Ratio) from target and prediction values.
+# It also shows how to graph the ROC, or Receiver Operation Charateristic
+# curve, and how to calculate the AUC, or Area Under ROC Curve, metric from
+# the ROC curve.
 
-# F1 score takes both recall and precision into account, and should
-# be used when working with datasets that have skewed targets.
-
+import matplotlib.pyplot as plt
 from sklearn import metrics
 
 def true_positive(y_true, y_pred):
@@ -108,32 +109,67 @@ def calculate_recall(y_true, y_pred):
     false_n = false_negative(y_true, y_pred)
     return (true_p) / (true_p + false_n)
 
-def calculate_f1(y_true, y_pred):
+def calculate_tpr(y_true, y_pred):
     """
-    Function to calculate f1 score from targets and predictions
+    Function to calculate TPR from targets and predictions
     :param y_true: target values
     :param y_pred: predicted values
-    :return: calculated f1 score
+    :return: calculated TPR
     """
-    p = calculate_precision(y_true, y_pred)
-    r = calculate_recall(y_true, y_pred)
-    f1_score = 2*p*r / (p + r)
-    return f1_score
+    return calculate_recall(y_true, y_pred)
+
+def calculate_fpr(y_true, y_pred):
+    """
+    Function to calculate FPR from targets and predictions
+    :param y_true: target values
+    :param y_pred: predicted values
+    :return: calculated FPR
+    """
+    false_p = false_positive(y_true, y_pred)
+    true_n = true_negative(y_true, y_pred)
+    return false_p / (false_p + true_n)
 
 if __name__ == "__main__":
+    # Empty lists to store TPR and FPR values
+    tpr_list = []
+    fpr_list = []
+
+    # Target and predicted values
+    y_true = [0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1]
+    y_pred = [0.1, 0.3, 0.2, 0.6, 0.8, 0.05, 0.9, 0.5,
+              0.3, 0.66, 0.3, 0.2, 0.85, 0.15, 0.99]
+
+    # Handmade thresholds
+    thresholds = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7,
+                  0.8, 0.85, 0.9, 0.99, 1.0]
+
+    # Calculate the TPR and FPR values for all threshold
+    # values, and store the results in 'tpr_list' and 'fpr_list'
+    for thresh in thresholds:
+        temp_pred = [1 if x >= thresh else 0 for x in y_pred]
+        temp_tpr = calculate_tpr(y_true, temp_pred)
+        temp_fpr = calculate_fpr(y_true, temp_pred)
+        tpr_list.append(temp_tpr)
+        fpr_list.append(temp_fpr)
+
+    # Plot FPR vs TPR. FPR is on the x-axis and TPR is on the y-axis
+    # This curve is known as the Receiver Operating Characteristic (ROC).
+    # We calculate the area under this curve, which gives us a metric
+    # that is usually used when working with a dataset which has 
+    # skewed binary targets. This metric is known as the Area Under Curve,
+    # or Area Under ROC Curve, or AUC
+    plt.figure(figsize=(7, 7))
+    plt.fill_between(fpr_list, tpr_list, alpha=0.4)
+    plt.plot(fpr_list, tpr_list, lw=3)
+    plt.xlim(0, 1.0)
+    plt.ylim(0, 1.0)
+    plt.xlabel('FPR', fontsize=15)
+    plt.ylabel('TPR', fontsize=15)
+
+    # Calculate the AUC value using Sklearn
+    AUC_values = metrics.roc_auc_score(y_true, y_pred)
+    print('AUC values = ', AUC_values)
+
+    plt.show()
+
     
-    # Initialize two arrays, one that has true values
-    # and one that has predicted values
-    y_true = [0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-              1, 0, 0, 0, 0, 0, 0, 0, 1, 0]
-
-    y_pred = [0, 0, 1, 0, 0, 0, 1, 0, 0, 0,
-              1, 0, 0, 0, 0, 0, 0, 0, 1, 0]
-
-    # Calculate f1 score using custom functions and calculations
-    manual_f1 = calculate_f1(y_true, y_pred)
-    print('Manual f1 score = ', manual_f1)
-
-    # Calculate f1 score using sklearn library 
-    sklearn_f1 = metrics.f1_score(y_true, y_pred)
-    print('Sklearn f1 score = ', sklearn_f1)
