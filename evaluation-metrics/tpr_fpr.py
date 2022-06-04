@@ -4,6 +4,10 @@
 # curve, and how to calculate the AUC, or Area Under ROC Curve, metric from
 # the ROC curve.
 
+# In addition, this script also shows how threshold values impact TP and FP values,
+# and how one can use the ROC curve to observe the trade-off between different
+# threshold values, and in turn decide what threshold is best to choose.
+
 import matplotlib.pyplot as plt
 from sklearn import metrics
 
@@ -134,6 +138,10 @@ if __name__ == "__main__":
     tpr_list = []
     fpr_list = []
 
+    # Empty list to store TP and FP values
+    tp_list = []
+    fp_list = []
+
     # Target and predicted values
     y_true = [0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1]
     y_pred = [0.1, 0.3, 0.2, 0.6, 0.8, 0.05, 0.9, 0.5,
@@ -149,8 +157,12 @@ if __name__ == "__main__":
         temp_pred = [1 if x >= thresh else 0 for x in y_pred]
         temp_tpr = calculate_tpr(y_true, temp_pred)
         temp_fpr = calculate_fpr(y_true, temp_pred)
+        temp_tp = true_positive(y_true, temp_pred)
+        temp_fp = false_positive(y_true, temp_pred)
         tpr_list.append(temp_tpr)
         fpr_list.append(temp_fpr)
+        tp_list.append(temp_tp)
+        fp_list.append(temp_fp)
 
     # Plot FPR vs TPR. FPR is on the x-axis and TPR is on the y-axis
     # This curve is known as the Receiver Operating Characteristic (ROC).
