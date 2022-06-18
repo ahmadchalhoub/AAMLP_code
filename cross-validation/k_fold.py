@@ -26,6 +26,7 @@ if __name__ == "__main__":
     kf = model_selection.KFold(n_splits=5)
 
     # Fill the new kfold column and split the data into 5 sections
+    # Print the different variables to better understand what they are
     for fold, (trn_, val_) in enumerate(kf.split(X=df)):
         print('fold: ', fold)
         print('trn_: ', trn_)
