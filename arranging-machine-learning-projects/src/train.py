@@ -1,3 +1,7 @@
+# This performs training using the MNIST data on a decision tree classifier
+
+import os
+import config
 import joblib
 import pandas as pd
 from sklearn import metrics
@@ -6,8 +10,7 @@ from sklearn import tree
 def run(fold):
 
     # read the csv of the data with the folds
-    df = pd.read_csv(
-        "/home/ahmad/dev/AAMLP_code/arranging-machine-learning-projects/input/mnist_train_folds.csv", index_col=[0])
+    df = pd.read_csv(config.TRAINING_FILE)
 
     # when we use a dataset for training and validation with kfold, we set which folds
     # we want for training and which ones we want for validation. for example, if we 
@@ -30,7 +33,9 @@ def run(fold):
     # initialize a simple decision tree classifier from sklearn
     clf = tree.DecisionTreeClassifier()
 
-    # fit the model on training data
+    # fit the model on training data. the .fit() method takes two parameters,
+    # the first one is 'X', which is an array of shape (n_samples, n_features),
+    # and the second one is of shape (n_samples,)
     clf.fit(x_train, y_train)
 
     # create predictions for validation samples
@@ -41,8 +46,8 @@ def run(fold):
     print(f"Fold = {fold}, Accuracy = {accuracy}")
 
     # save the model, including fold number and its accuracy
-    joblib.dump(clf, f"../models/dt_{fold}_{accuracy}")
-
+    joblib.dump(clf, os.path.join(config.MODEL_OUTPUT, f"dt_{fold}_{accuracy}"))
+    
 if __name__ == "__main__":
 
     # traing the decision tree with fold = 0, 1, 2, 3, and 4
