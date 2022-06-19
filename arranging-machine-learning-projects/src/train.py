@@ -1,14 +1,17 @@
 # This performs training using the MNIST data on a decision tree classifier
 
 import os
-import config
-import joblib
 import argparse
+
+import joblib
 import pandas as pd
 from sklearn import metrics
-from sklearn import tree
 
-def run(fold):
+import config
+import model_dispatcher
+
+
+def run(fold, model):
 
     # read the csv of the data with the folds
     df = pd.read_csv(config.TRAINING_FILE)
@@ -32,7 +35,7 @@ def run(fold):
     y_valid = df_valid.label.values
 
     # initialize a simple decision tree classifier from sklearn
-    clf = tree.DecisionTreeClassifier()
+    clf = model_dispatcher.models[model]
 
     # fit the model on training data. the .fit() method takes two parameters,
     # the first one is 'X', which is an array of shape (n_samples, n_features),
@@ -56,9 +59,10 @@ if __name__ == "__main__":
         
     # add the arguments that we want and their type
     parser.add_argument("--fold", type=int)
+    parser.add_argument("--model", type=str)
 
     # read the arguments from the command line
     args = parser.parse_args()
 
     # traing the decision tree on the fold that we passed as an argument
-    run(fold=args.fold)
+    run(fold=args.fold, model=args.model)
