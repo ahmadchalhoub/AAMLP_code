@@ -3,6 +3,7 @@
 import os
 import config
 import joblib
+import argparse
 import pandas as pd
 from sklearn import metrics
 from sklearn import tree
@@ -50,6 +51,14 @@ def run(fold):
     
 if __name__ == "__main__":
 
-    # traing the decision tree with fold = 0, 1, 2, 3, and 4
-    for i in range(5):
-        run(i)
+    # initialize an ArgumentParser class of argparse
+    parser = argparse.ArgumentParser()
+        
+    # add the arguments that we want and their type
+    parser.add_argument("--fold", type=int)
+
+    # read the arguments from the command line
+    args = parser.parse_args()
+
+    # traing the decision tree on the fold that we passed as an argument
+    run(fold=args.fold)
