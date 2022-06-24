@@ -1,11 +1,11 @@
-# This script implements a Logistic Regression model
-# with One Hot Encoding on the 'cat-in-the-dat-ii' dataset
+# This script implements a Random Forest model with 
+# Label Encoding on the 'cat-in-the-dat-ii' dataset
 
 import pandas as pd
 
 from sklearn import metrics
+from sklearn import ensemble
 from sklearn import preprocessing
-from sklearn import linear_model
 
 def run(fold):
 
@@ -19,23 +19,21 @@ def run(fold):
     for col in features:
         df.loc[:, col] = df[col].astype(str).fillna("NONE")
 
+    for col in features:
+        lbl = preprocessing.LabelEncoder()
+        lbl.fit(df[col])
+        df.loc[:, col] = lbl.transform(df[col])
+
     # get training and validation data using folds
     df_train = df[df.kfold != fold].reset_index(drop=True)
     df_valid = df[df.kfold == fold].reset_index(drop=True)
 
-    # initialize OneHotEncoder from scikit-learn
-    ohe = preprocessing.OneHotEncoder()
+    # get training and validation data
+    x_train = df_train[features].values
+    x_valid = df_valid[features].values
 
-    # fit ohe on training + validation features
-    full_data = pd.concat([df_train[features], df_valid[features]], axis = 0)
-    ohe.fit(full_data)
-
-    # transform training and validation data
-    x_train = ohe.transform(df_train[features])
-    x_valid = ohe.transform(df_valid[features])
-
-    # initialize Logistic Regression model
-    model = linear_model.LogisticRegression()
+    # initialize a random forest model
+    model = ensemble.RandomForestClassifier(n_jobs=-1)
 
     # train model (fit model on training data)
     model.fit(x_train, df_train.target.values)
