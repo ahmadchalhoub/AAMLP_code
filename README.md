@@ -1,6 +1,6 @@
 # AAMLP_code
 This repository is to document my progress as I go through the 'Approaching (Almost) Any Machine Learning Problem'
-by Abhishek Thakur. 
+book by Abhishek Thakur. 
 
 I love this book because it is applied and hands-on, and it's a lot of fun to work on!
 
