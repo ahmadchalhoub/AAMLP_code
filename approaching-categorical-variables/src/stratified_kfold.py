@@ -2,13 +2,23 @@
 # use Stratified K-Fold to perform cross-validation,
 # since it is a binary classification problem with skewed data
 
+import argparse
+import string
 import pandas as pd
 from sklearn import model_selection
 
 if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input_dataset', type=str)
+    parser.add_argument('--output_dataset', type=str)
+    args = parser.parse_args()
+
+    input_data = args.input_dataset
+    output_data = args.output_dataset
+
     # read the dataset
-    df = pd.read_csv("../input/train.csv")
+    df = pd.read_csv(input_data)
 
     # create a 'kfold' column
     df["kfold"] = -1
@@ -27,5 +37,5 @@ if __name__ == "__main__":
         df.loc[val_, 'kfold'] = fold
 
     # save the new csv file 
-    df.to_csv("../input/cat_train_folds.csv", index=False)
+    df.to_csv(output_data, index=False)
     
