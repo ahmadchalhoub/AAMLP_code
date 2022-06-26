@@ -1,9 +1,7 @@
-# To work with the cat-in-the-dat-ii dataset, we
-# use Stratified K-Fold to perform cross-validation,
-# since it is a binary classification problem with skewed data
+# This script implements Stratified KFold to
+# binary classification problems with skewed datasets
 
 import argparse
-import string
 import pandas as pd
 from sklearn import model_selection
 
@@ -27,7 +25,7 @@ if __name__ == "__main__":
     df = df.sample(frac=1).reset_index(drop=True)
 
     # obtain the label values
-    y = df.target.values
+    y = df.income.values
 
     # initialize a StratifiedKFold model
     kf = model_selection.StratifiedKFold(n_splits=5)
