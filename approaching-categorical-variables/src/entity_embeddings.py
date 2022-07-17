@@ -1,3 +1,14 @@
+# This script implements entity embeddings (using a neural network)
+# on the cat-in-the-dat-ii dataset.
+
+# Entity Embedding is where we have an embedding for each categorical
+# feature. So, every category in a column can be mapped to an embedding.
+# Then, we reshape these embeddings to their dimension to make them
+# flat and then concatenate all the flattened inputs embeddings. We then
+# add a bunch of Dense -> Dropout -> BN layers, then an output layer,
+# and we are done. This can be much more clearly understood in this video:
+# https://www.youtube.com/watch?v=EATAM3BOD_E 
+
 import os
 import gc
 from venv import create
@@ -21,19 +32,17 @@ def create_model(data, catcols):
     :return: compiled tf.keras model
     """
 
-    # initialize list of inputs for embeddings
+    # initialize lists of inputs & outputs for embeddings
     inputs = []
-
-    # initialize list of outputs for embeddings
     outputs = []
 
-    print("I entered the function")
     # loop over all categorical columns
     for i, c in enumerate(catcols):
 
         # find the number of unique values in the column
         num_unique_values = int(data[c].nunique())
         print(f"Column {i} has {num_unique_values} unique values")
+
         # simple dimension of embedding calculator.
         # min size is half of the number of unique values;
         # max size is 50. max size depends on the number of
@@ -41,8 +50,12 @@ def create_model(data, catcols):
         # of the times but if you have millions of unique 
         # values, you might need a larger dimension
         embed_dim = int(min(np.ceil((num_unique_values)/2), 50))
+        print(f"Column {i} has embed_dim = {embed_dim}")
 
-        # simple keras input layer with size 1
+        # simple keras input layer with size 1;
+        # this is the input that will feed into the Embedding layer;
+        # look at https://keras.io/api/layers/merging_layers/add/ 
+        # for explanation on how to merge layers in Keras
         inp = layers.Input(shape=(1,))
 
         # add embedding layer to raw input
@@ -121,12 +134,9 @@ def run(fold):
     # create tf.keras model
     model = create_model(df, features)
 
-    xtrain = [
-        df_train[features].values[:, k] for k in range(len(features))
-    ]
-    xvalid = [
-        df_valid[features].values[:, k] for k in range(len(features))
-    ]
+    # input features to model should be lists of lists
+    xtrain = [df_train.loc[:, f].values for f in features]
+    xvalid = [df_valid.loc[:, f].values for f in features]
 
     # fetch target columns
     ytrain = df_train.target.values
@@ -148,7 +158,7 @@ def run(fold):
     valid_preds = model.predict(xvalid)[:, 1]
 
     # print roc auc score
-    print(metrics.roc_auc_score(yvalid, valid_preds))
+    print(f"ROC score = {metrics.roc_auc_score(yvalid, valid_preds)}")
 
     K.clear_session()
 
