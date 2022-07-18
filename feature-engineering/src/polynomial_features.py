@@ -1,7 +1,6 @@
 # This script demonstrates how polynomial features can
 # be created from original features.
 
-from pickle import FALSE
 import numpy as np
 import pandas as pd
 from sklearn import preprocessing
@@ -18,7 +17,7 @@ df = pd.DataFrame(
 pf = preprocessing.PolynomialFeatures(
     degree=2,
     interaction_only=False,
-    include_bias=FALSE
+    include_bias=False
 )
 
 # fit to the features and transform
