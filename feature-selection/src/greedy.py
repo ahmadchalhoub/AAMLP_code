@@ -1,3 +1,6 @@
+# This script shows the implementation of
+# Greedy Feature Selection
+
 import pandas as pd
 
 from sklearn import linear_model
