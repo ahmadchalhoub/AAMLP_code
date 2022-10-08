@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     # initialize grid search; the estimator is the model
     # that we have defined; param_grid is the grid of
-    # parameters; we use accuracyas our metric; verbose=10
+    # parameters; we use accuracy as our metric; verbose=10
     # implies that a lot of details are printed; cv=5 means
     # that we are using 5 fold cv (not stratified)
     model = model_selection.GridSearchCV(
