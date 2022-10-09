@@ -70,3 +70,42 @@ class AlexNet(nn.Module):
             in_features=4096,
             out_features=1000
         )
+
+    # method to perform forward propagation
+    def forward(self, image):
+        
+        # get the batch size, channels, height, and
+        # width of the input batch of images.
+        # original size: (bs, 3, 227, 227)
+        bs, c, h, w = image.size()
+
+        x = F.relu(self.conv1(image))    # size: (bs, 96, 55, 55) (after convolution happens)
+        x = self.pool1(x)                # size: (bs, 96, 27, 27) (after max pooling happens)
+        
+        x = F.relu(self.conv2(x))        # size: (bs, 256, 27, 27)
+        x = self.pool2(x)                # size: (bs, 256, 13, 13)
+
+        x = F.relu(self.conv3(x))        # size: (bs, 384, 13, 13)
+        x = F.relu(self.conv4(x))        # size: (bs, 384, 13, 13)
+        x = F.relu(self.conv5(x))        # size: (bs, 256, 13, 13)
+
+        x = self.pool3(x)                # size: (bs, 256, 6, 6)
+
+        x = x.view(bs, -1)               # size: (bs, 9216)
+        x = F.relu(self.fc1(x))          # size: (bs, 4096)
+
+        # dropout does not change size. dropout is used for
+        # regularization. 0.3 dropout means that only 70% of
+        # the nodes of the current layer are used for the next layer
+        x = self.dropout1(x)             # size: (bs, 4096)
+
+        x = F.relu(self.fc2(x))          # size: (bs, 4096)
+        x = self.dropout2(x)             # size: (bs, 4096)
+
+        # 1000 is the number of classes in the ImageNet dataset.
+        # softmax is an activation function that converts linear
+        # outputs to probabilities that add up to 1 for each sample in the batch
+        x = F.relu(self.fc3(x))          # size: (bs, 1000)
+        x = torch.softmax(x, axis=1)     # size: (bs, 1000)
+
+        return x
